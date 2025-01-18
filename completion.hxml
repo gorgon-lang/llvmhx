@@ -1,0 +1,3 @@
+--macro include("llvm", true)
+--cpp bin/cpp
+--no-output

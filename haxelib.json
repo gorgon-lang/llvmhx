@@ -1,0 +1,11 @@
+{
+  "name": "llvm",
+  "url": "https://github.com/gorgon/llvmhx",
+  "license": "MIT",
+  "tags": ["llvm", "haxe"],
+  "description": "",
+  "version": "0.0.1",
+  "releasenote": "",
+  "contributors": ["amiataas"],
+  "dependencies": {}
+}
