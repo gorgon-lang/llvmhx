@@ -1,5 +1,7 @@
 package llvm;
 
+import llvm.FunctionAttribute.FunctionAttributeUtil;
+import llvm.ParameterAttribute.ParameterAttributeTool;
 import llvm.Operand.OperandUtil;
 import llvm.Type.TypeUtil;
 
@@ -95,6 +97,97 @@ class Builder {
 		this.buffer.add('${dest.toString()} = fsub ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
 	}
 
+	private inline function renderMulInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?nuw:Bool=false, ?nsw:Bool=false) : Void {
+		this.buffer.add('${res.toString()} = mul ${TypeUtil.toString(resultType)} ${nuw ? 'nuw ' : ''}${nsw ? 'nsw ' : ''}${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderFMulInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?fmflags:FastMathFlag) : Void {
+		this.buffer.add('${res.toString()} = fmul ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderUDivInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?exact:Bool=false) : Void {
+		this.buffer.add('${res.toString()} = udiv ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderSDivInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?exact:Bool=false) : Void {
+		this.buffer.add('${res.toString()} = sdiv ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderFDivInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?fmflags:FastMathFlag) : Void {
+		this.buffer.add('${res.toString()} = fdiv ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderURemInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand) : Void {
+		this.buffer.add('${res.toString()} = urem ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderSRemInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand) : Void {
+		this.buffer.add('${res.toString()} = srem ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderFRemInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?fmflags:FastMathFlag) : Void {
+		this.buffer.add('${res.toString()} = frem ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderShlInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?nuw:Bool=false, ?nsw:Bool=false) : Void {
+		this.buffer.add('${res.toString()} = shl ${TypeUtil.toString(resultType)} ${nuw ? 'nuw ' : ''}${nsw ? 'nsw ' : ''}${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderLShrInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?exact:Bool=false) : Void {
+		this.buffer.add('${res.toString()} = lshr ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderAShrInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand, ?exact:Bool=false) : Void {
+		this.buffer.add('${res.toString()} = ashr ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderAndInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand) : Void {
+		this.buffer.add('${res.toString()} = and ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderOrInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand) : Void {
+		this.buffer.add('${res.toString()} = or ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderXorInstruction(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand) : Void {
+		this.buffer.add('${res.toString()} = xor ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
+	}
+
+	private inline function renderCallInstruction(res:Identifier, resultType:Type, args:Array<Identifier>, ?tail:CallTail, ?fmflags:FastMathFlag, ?retAttr:Array<ParameterAttribute>, ?addrspace:Int, ?fnAttrs:Array<FunctionAttribute>) : Void {
+		this.buffer.add('${res.toString()} = call ${TypeUtil.toString(resultType)} ');
+		if(fnAttrs != null) {
+			this.buffer.add('[');
+			for(i in 0...fnAttrs.length) {
+				if(i > 0) {
+					this.buffer.add(', ');
+				}
+				this.buffer.add('${FunctionAttributeUtil.toString(fnAttrs[i])}');
+			}
+			this.buffer.add('] ');
+		}
+		if(addrspace != null) {
+			this.buffer.add('addrspace(${addrspace}) ');
+		}
+		if(fmflags != null) {
+			this.buffer.add('fastmath ');
+		}
+		if(retAttr != null) {
+			this.buffer.add('[');
+			for(i in 0...retAttr.length) {
+				if(i > 0) {
+					this.buffer.add(', ');
+				}
+				this.buffer.add('${ParameterAttributeTool.toString(retAttr[i])}');
+			}
+			this.buffer.add('] ');
+		}
+		this.buffer.add('${args[0].toString()}');
+		for(i in 1...args.length) {
+			this.buffer.add(', ${args[i].toString()}');
+		}
+		this.buffer.add('\n');
+	}
+
 	private inline function renderInstruction(instruction:Instruction) {
 		switch instruction {
 			case Ret(operand):
@@ -109,6 +202,36 @@ class Builder {
 				this.renderFaddInstruction(res, resultType, lhs, rhs, fmflags);
 			case FSub(res, resultType, lhs, rhs, fmflags):
 				this.renderFsubInstructon(res, resultType, lhs, rhs, fmflags);
+			case Mul(res, resultType, lhs, rhs, nuw, nsw):
+				this.renderMulInstruction(res, resultType, lhs, rhs, nuw, nsw);
+			case FMul(res, resultType, lhs, rhs, fmflags):
+				this.renderFMulInstruction(res, resultType, lhs, rhs, fmflags);
+			case UDiv(res, resultType, lhs, rhs, exact):
+				this.renderUDivInstruction(res, resultType, lhs, rhs, exact);
+			case SDiv(res, resultType, lhs, rhs, exact):
+				this.renderSDivInstruction(res, resultType, lhs, rhs, exact);
+			case FDiv(res, resultType, lhs, rhs, fmflags):
+				this.renderFDivInstruction(res, resultType, lhs, rhs, fmflags);
+			case URem(res, resultType, lhs, rhs):
+				this.renderURemInstruction(res, resultType, lhs, rhs);
+			case SRem(res, resultType, lhs, rhs):
+				this.renderSRemInstruction(res, resultType, lhs, rhs);
+			case FRem(res, resultType, lhs, rhs, fmflags):
+				this.renderFRemInstruction(res, resultType, lhs, rhs, fmflags);
+			case Shl(res, resultType, lhs, rhs, nuw, nsw):
+				this.renderShlInstruction(res, resultType, lhs, rhs, nuw, nsw);
+			case LShr(res, resultType, lhs, rhs, exact):
+				this.renderLShrInstruction(res, resultType, lhs, rhs, exact);
+			case AShr(res, resultType, lhs, rhs, exact):
+				this.renderAShrInstruction(res, resultType, lhs, rhs, exact);
+			case And(res, resultType, lhs, rhs):	
+				this.renderAndInstruction(res, resultType, lhs, rhs);
+			case Or(res, resultType, lhs, rhs):
+				this.renderOrInstruction(res, resultType, lhs, rhs);
+			case Xor(res, resultType, lhs, rhs):
+				this.renderXorInstruction(res, resultType, lhs, rhs);
+			case Call(res, resultType, args, tail, fmflags, retAttr, addrspace, fnAttrs):
+				this.renderCallInstruction(res, resultType, args, tail, fmflags, retAttr, addrspace, fnAttrs);
 		}
 	}
 
