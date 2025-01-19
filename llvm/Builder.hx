@@ -1,6 +1,6 @@
 package llvm;
 
-import llvm.GlobalVarDef.GlobalVar;
+import llvm.GlobalVar;
 import llvm.FunctionAttribute.FunctionAttributeUtil;
 import llvm.ParameterAttribute.ParameterAttributeTool;
 import llvm.Operand.OperandUtil;
@@ -23,17 +23,7 @@ class Builder {
 	}
 
 	public inline function renderFunction(def:Function) : Void {
-		this.buffer.add("define ");
-		this.buffer.add('${TypeUtil.toString(def.returnType)}');
-		this.buffer.add(' @${def.name}(');
-		for(i in 0...def.params.length) {
-			if(i > 0) {
-				this.buffer.add(', ');
-			}
-			this.buffer.add('${def.params[i].toTypedString()}');
-		}
-		this.buffer.add(') {\n');
-
+		this.buffer.add('${def.toString()} {\n');
 		for(bodyDef in def.body) {
 			switch bodyDef {
 				case Label(name, instructions):
@@ -235,8 +225,8 @@ class Builder {
 				this.renderOrInstruction(res, resultType, lhs, rhs);
 			case Xor(res, resultType, lhs, rhs):
 				this.renderXorInstruction(res, resultType, lhs, rhs);
-			case Call(res, resultType, args, tail, fmflags, retAttr, addrspace, fnAttrs):
-				this.renderCallInstruction(res, resultType, args, tail, fmflags, retAttr, addrspace, fnAttrs);
+			case Call(res, resultType, args, t, fmflags, retAttr, addrspace, fnAttrs):
+				this.renderCallInstruction(res, resultType, args, t, fmflags, retAttr, addrspace, fnAttrs);
 		}
 	}
 

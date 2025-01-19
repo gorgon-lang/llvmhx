@@ -62,7 +62,7 @@ enum ParameterAttribute {
 }
 
 class ParameterAttributeTool {
-	public static inline function toString(p:ParameterAttribute) {
+	public static function toString(p:ParameterAttribute) {
 		switch p {
 			case ZeroExt: return "zeroext";
 			case SignExt: return "signext";
