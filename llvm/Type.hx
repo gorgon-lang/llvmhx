@@ -14,6 +14,8 @@ enum Type {
 	TArray(n:Int, t:Type);
 	TStruct(t:Array<Type>);
 	TLabel;
+	TTypedPtr(t:Type);
+	TPtr;
 }
 
 class TypeUtil {
@@ -31,6 +33,8 @@ class TypeUtil {
 			case TArray(n, t): return '[${n} x ${TypeUtil.toString(t)}]';
 			case TStruct(t): return 'type {${t.map(TypeUtil.toString).join(', ')}}';
 			case TLabel: return 'label';
+			case TTypedPtr(t): return '${TypeUtil.toString(t)}*';
+			case TPtr: return 'ptr';
 		}
 	}
 }
