@@ -15,7 +15,7 @@ enum LinkageType {
 }
 
 class LinkageTypeUtil {
-	public inline function toString(v:LinkageType) {
+	public static inline function toString(v:LinkageType) {
 		switch v {
 			case Private: return "private";
 			case Internal: return "internal";

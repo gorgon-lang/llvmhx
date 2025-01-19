@@ -1,5 +1,6 @@
 package llvm;
 
+import llvm.GlobalVarDef.GlobalVar;
 import llvm.FunctionAttribute.FunctionAttributeUtil;
 import llvm.ParameterAttribute.ParameterAttributeTool;
 import llvm.Operand.OperandUtil;
@@ -45,6 +46,10 @@ class Builder {
 			}
 		}
 		this.buffer.add('}\n');
+	}
+
+	public inline function renderGlobalVar(def:GlobalVar) : Void {
+		this.buffer.add('${def.toString()}\n');
 	}
 
 	private inline function renderRetInstruction(operand:Operand) : Void {

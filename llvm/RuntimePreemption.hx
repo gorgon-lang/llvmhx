@@ -7,7 +7,7 @@ enum RuntimePreemption {
 }
 
 class RuntimePreemptionUtil {
-	public inline function toString(v:RuntimePreemption) {
+	public static inline function toString(v:RuntimePreemption) {
 		switch v {
 			case None: return "";
 			case Local: return "dso_local";

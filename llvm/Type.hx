@@ -1,7 +1,5 @@
 package llvm;
 
-import llvm.StructureType;
-
 enum Type {
 	TVoid;
 	TInt(n:Int);

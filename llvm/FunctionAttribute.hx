@@ -88,7 +88,7 @@ enum FunctionAttribute {
 }
 
 class FunctionAttributeUtil {
-	public static inline function toString(attr:FunctionAttribute) : String {
+	public static function toString(attr:FunctionAttribute) : String {
 		switch attr {
 			case AlignStack(n): return 'alignstack(${n})';
 			case AllocFamily(f): return 'allocfamily(${f})';

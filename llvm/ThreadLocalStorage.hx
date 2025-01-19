@@ -8,12 +8,12 @@ enum ThreadLocalStorage {
 }
 
 class ThreadLocalStorageUtil {
-	public inline function toString(v:ThreadLocalStorage) {
+	public static inline function toString(v:ThreadLocalStorage) {
 		switch v {
-			case GeneralDynamic: return "general_dynamic";
-			case LocalDynamic: return "local_dynamic";
-			case InitialExec: return "initial_exec";
-			case LocalExec: return "local_exec";
+			case GeneralDynamic: return "";
+			case LocalDynamic: return "localdynamic";
+			case InitialExec: return "initialexec";
+			case LocalExec: return "localexec";
 		}
 	}
 }

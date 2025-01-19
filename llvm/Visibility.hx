@@ -7,7 +7,7 @@ enum Visibility {
 }
 
 class VisibilityUtil {
-	public inline function toString(v:Visibility) {
+	public static inline function toString(v:Visibility) {
 		switch v {
 			case Default: return "default";
 			case Hidden: return "hidden";
