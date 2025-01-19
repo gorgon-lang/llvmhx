@@ -24,7 +24,7 @@ enum CallingConventions {
 }
 
 class CallingConventionTool {
-	public static inline function toString(cc:CallingConventions):String {
+	public static function toString(cc:CallingConventions):String {
 		switch(cc) {
 			case Base(cc): return cc;
 			case Cc(n): return "cc " + n;

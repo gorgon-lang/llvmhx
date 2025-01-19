@@ -41,6 +41,10 @@ typedef GlobalVarDef = {
 @:forward
 abstract GlobalVar(GlobalVarDef) from GlobalVarDef to GlobalVarDef {
 	public function new(def:GlobalVarDef) {
+		if(!Identifier.UNNAMED_VALIDATOR.match(def.name)) {
+			throw new haxe.Exception('Invalid identifier ${def.name}');
+		}
+
 		if(def.externallyInitialized == null) {
 			def.externallyInitialized = false;
 		}
@@ -58,6 +62,10 @@ abstract GlobalVar(GlobalVarDef) from GlobalVarDef to GlobalVarDef {
 		}
 
 		this = def;
+	}
+
+	public function getPtr() : String {
+		return 'ptr @${this.name}';
 	}
 
 	public function setLinkage(linkage:LinkageType):GlobalVar {

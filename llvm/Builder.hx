@@ -16,14 +16,15 @@ class Builder {
 	}
 
 	public inline function renderModuleDef(name:String) : Void {
-		if( this.context.hasComments ) {
-			this.buffer.add('; ModuleID = "${name}"\n');
-		}
 		this.buffer.add('source_filename = "${name}"\n');
 	}
 
 	public inline function renderFunction(def:Function) : Void {
-		this.buffer.add('${def.toString()} {\n');
+		if(def.body == null) {
+			this.buffer.add('${def}\n');
+			return;
+		}
+		this.buffer.add('${def} {\n');
 		for(bodyDef in def.body) {
 			switch bodyDef {
 				case Label(name, instructions):
@@ -148,39 +149,17 @@ class Builder {
 		this.buffer.add('${res.toString()} = xor ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
 	}
 
-	private inline function renderCallInstruction(res:Identifier, resultType:Type, args:Array<Identifier>, ?tail:CallTail, ?fmflags:FastMathFlag, ?retAttr:Array<ParameterAttribute>, ?addrspace:Int, ?fnAttrs:Array<FunctionAttribute>) : Void {
-		this.buffer.add('${res.toString()} = call ${TypeUtil.toString(resultType)} ');
-		if(fnAttrs != null) {
-			this.buffer.add('[');
-			for(i in 0...fnAttrs.length) {
-				if(i > 0) {
-					this.buffer.add(', ');
-				}
-				this.buffer.add('${FunctionAttributeUtil.toString(fnAttrs[i])}');
+	private inline function renderCallInstruction(fnptrVal:String, resType:Type, args:Array<Parameter>) : Void {
+		this.buffer.add('call ${TypeUtil.toString(resType)} ');
+		this.buffer.add('${fnptrVal}(');
+
+		for(i in 0...args.length) {
+			if(i > 0) {
+				this.buffer.add(', ');
 			}
-			this.buffer.add('] ');
+			this.buffer.add(args[i].toString());
 		}
-		if(addrspace != null) {
-			this.buffer.add('addrspace(${addrspace}) ');
-		}
-		if(fmflags != null) {
-			this.buffer.add('fastmath ');
-		}
-		if(retAttr != null) {
-			this.buffer.add('[');
-			for(i in 0...retAttr.length) {
-				if(i > 0) {
-					this.buffer.add(', ');
-				}
-				this.buffer.add('${ParameterAttributeTool.toString(retAttr[i])}');
-			}
-			this.buffer.add('] ');
-		}
-		this.buffer.add('${args[0].toString()}');
-		for(i in 1...args.length) {
-			this.buffer.add(', ${args[i].toString()}');
-		}
-		this.buffer.add('\n');
+		this.buffer.add(')\n');
 	}
 
 	private inline function renderAllocaInstruction(res:Identifier, type:Type, ?inalloca:Bool=false, ?alignment:Int=0, ?addrspace:Int=0, ?numElements:Constant=null) : Void {
@@ -250,8 +229,8 @@ class Builder {
 			case Alloca(res, type, inalloca, alignment, addrspace, numElements):
 				this.renderAllocaInstruction(res, type, inalloca, alignment, addrspace, numElements);
 
-			case Call(res, resultType, args, t, fmflags, retAttr, addrspace, fnAttrs):
-				this.renderCallInstruction(res, resultType, args, t, fmflags, retAttr, addrspace, fnAttrs);
+			case Call(fnptrVal, args, res, resultType, t, fmflags, retAttr, addrspace, fnAttrs):
+				this.renderCallInstruction(fnptrVal, resultType, args);
 		}
 	}
 

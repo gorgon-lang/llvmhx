@@ -1,5 +1,6 @@
 package llvm;
 
+import llvm.Parameter;
 import llvm.Type.TypeUtil;
 import llvm.UnnamedAddressSpace;
 import llvm.CallingConventions;
@@ -16,7 +17,7 @@ import llvm.LinkageType;
 typedef FunctionDef = {
 	final name : String;
 	var returnType : Type;
-	var arguments : Array<Identifier>;
+	var arguments : Array<Parameter>;
 	var ?body : FunctionBody;
 	var ?linkage : LinkageType;
 	var ?preemption : RuntimePreemption;
@@ -40,6 +41,10 @@ typedef FunctionDef = {
 abstract Function(FunctionDef) from FunctionDef to FunctionDef {
 	public function new(def:FunctionDef) {
 		this = def;
+	}
+
+	public function getPtr() : String {
+		return '@${this.name}';
 	}
 
 	public function toString() : String {
@@ -81,9 +86,17 @@ abstract Function(FunctionDef) from FunctionDef to FunctionDef {
 		buffer.add('@${this.name}(');
 
 		if(this.arguments.length > 0) {
-			buffer.add('${this.arguments[0].toTypedString()}');
+			if(this.body == null) {
+				buffer.add('${this.arguments[0].toUnnamedString()}');
+			} else {
+				buffer.add('${this.arguments[0].toString()}');
+			}
 			for(i in 1...this.arguments.length) {
-				buffer.add(', ${this.arguments[i].toTypedString()}');
+				if(this.body == null) {
+					buffer.add('${this.arguments[i].toUnnamedString()}');
+				} else {
+					buffer.add(', ${this.arguments[i].toString()}');
+				}
 			}
 		}
 		buffer.add(')');
