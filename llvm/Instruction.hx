@@ -1,5 +1,6 @@
 package llvm;
 
+import llvm.Constant;
 import llvm.ParameterAttribute;
 import llvm.Identifier;
 
@@ -24,6 +25,8 @@ enum Instruction {
 	And(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand);
 	Or(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand);
 	Xor(res:Identifier, resultType:Type, lhs:Operand, rhs:Operand);
+
+	Alloca(res:Identifier, type:Type, inalloca:Bool, ?alignment:Int, ?addrspace:Int, ?numElements:Constant);
 
 	Call(res:Identifier, resultType:Type, args:Array<Identifier>, ?tail:CallTail, ?fmflags:FastMathFlag, ?retAttr:Array<ParameterAttribute>, ?addrspace:Int, ?fnAttrs:Array<FunctionAttribute>);
 }

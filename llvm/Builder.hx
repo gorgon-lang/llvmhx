@@ -183,6 +183,28 @@ class Builder {
 		this.buffer.add('\n');
 	}
 
+	private inline function renderAllocaInstruction(res:Identifier, type:Type, ?inalloca:Bool=false, ?alignment:Int=0, ?addrspace:Int=0, ?numElements:Constant=null) : Void {
+		this.buffer.add('${res.toString()} = alloca ');
+		if(inalloca) {
+			this.buffer.add('inalloca ');
+		}
+
+		this.buffer.add('${TypeUtil.toString(type)}');
+
+		if(numElements != null) {
+			this.buffer.add(', ${numElements.toTypedString()}');
+		}
+
+		if(alignment != 0) {
+			this.buffer.add(', align ${alignment}');
+		}
+		if(addrspace != 0) {
+			this.buffer.add(', addrspace(${addrspace})');
+		}
+
+		this.buffer.add('\n');
+	}
+
 	private inline function renderInstruction(instruction:Instruction) {
 		switch instruction {
 			case Ret(operand):
@@ -225,6 +247,9 @@ class Builder {
 				this.renderOrInstruction(res, resultType, lhs, rhs);
 			case Xor(res, resultType, lhs, rhs):
 				this.renderXorInstruction(res, resultType, lhs, rhs);
+			case Alloca(res, type, inalloca, alignment, addrspace, numElements):
+				this.renderAllocaInstruction(res, type, inalloca, alignment, addrspace, numElements);
+
 			case Call(res, resultType, args, t, fmflags, retAttr, addrspace, fnAttrs):
 				this.renderCallInstruction(res, resultType, args, t, fmflags, retAttr, addrspace, fnAttrs);
 		}
