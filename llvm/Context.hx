@@ -2,7 +2,7 @@ package llvm;
 
 class Context {
 	private var unnamedGlobalLastID : Int = 0;
-	private var unnamedIdentifierLastID : Int = 0;
+	private var unnamedIdentifierLastID : Int = 2;
 
 	public function new() {
 		

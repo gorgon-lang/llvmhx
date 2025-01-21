@@ -1,5 +1,6 @@
 package llvm;
 
+import llvm.CallingConventions.CallingConventionTool;
 import llvm.GlobalVar;
 import llvm.FunctionAttribute.FunctionAttributeUtil;
 import llvm.ParameterAttribute.ParameterAttributeTool;
@@ -149,9 +150,54 @@ class Builder {
 		this.buffer.add('${res.toString()} = xor ${TypeUtil.toString(resultType)} ${OperandUtil.toString(lhs)}, ${OperandUtil.toString(rhs)}\n');
 	}
 
-	private inline function renderCallInstruction(fnptrVal:String, resType:Type, args:Array<Parameter>) : Void {
-		this.buffer.add('call ${TypeUtil.toString(resType)} ');
-		this.buffer.add('${fnptrVal}(');
+	private inline function renderCallInstruction(functionDef:Function, resType:Type, args:Array<Parameter>, res:Null<Identifier>, t:Null<CallTail>, fmflag:Null<FastMathFlag>, retAttr:Null<Array<ParameterAttribute>>, addrspace:Null<Int>, fnattrs:Null<Array<FunctionAttribute>>, cconv:Null<CallingConventions>) : Void {
+		if(res != null) {
+			this.buffer.add('${res.toString()} = ');
+		}
+
+		if(t != null) {
+			switch t {
+				case Tail: this.buffer.add('tail ');
+				case MustTail: this.buffer.add('musttail ');
+				case NoTail: this.buffer.add('notail ');
+			}
+		}
+
+		this.buffer.add('call ');
+		
+		if(cconv != null) {
+			this.buffer.add('${CallingConventionTool.toString(cconv)} ');
+		}
+
+		if(retAttr != null && retAttr.length != 0) {
+			for(i in 0...retAttr.length) {
+				if(i > 0) {
+					this.buffer.add(', ');
+				}
+				this.buffer.add('${ParameterAttributeTool.toString(retAttr[i])}');
+			}
+			this.buffer.add(' ');
+		}
+
+		if(addrspace != null) {
+			this.buffer.add('addrspace(${addrspace}) ');
+		}
+
+		this.buffer.add('${TypeUtil.toString(resType)}');
+
+		if(functionDef.arguments.length > 0) {
+			this.buffer.add("( ");
+
+			for(i in 0...functionDef.arguments.length) {
+				if(i > 0) {
+					this.buffer.add(', ');
+				}
+				this.buffer.add(TypeUtil.toString(functionDef.arguments[i].type));
+			}
+			this.buffer.add(" ) ");
+		}
+
+		this.buffer.add('@${functionDef.name}(');
 
 		for(i in 0...args.length) {
 			if(i > 0) {
@@ -159,7 +205,16 @@ class Builder {
 			}
 			this.buffer.add(args[i].toString());
 		}
-		this.buffer.add(')\n');
+
+		this.buffer.add(')');
+
+		if(fnattrs != null) {
+			for(attr in fnattrs) {
+				this.buffer.add('${FunctionAttributeUtil.toString(attr)} ');
+			}
+		}
+
+		this.buffer.add('\n');
 	}
 
 	private inline function renderAllocaInstruction(res:Identifier, type:Type, ?inalloca:Bool=false, ?alignment:Int=0, ?addrspace:Int=0, ?numElements:Constant=null) : Void {
@@ -229,8 +284,8 @@ class Builder {
 			case Alloca(res, type, inalloca, alignment, addrspace, numElements):
 				this.renderAllocaInstruction(res, type, inalloca, alignment, addrspace, numElements);
 
-			case Call(fnptrVal, args, res, resultType, t, fmflags, retAttr, addrspace, fnAttrs):
-				this.renderCallInstruction(fnptrVal, resultType, args);
+			case Call(fnptrVal, args, res, resultType, t, fmflags, retAttr, addrspace, fnAttrs, cconv):
+				this.renderCallInstruction(fnptrVal, resultType, args, res, t, fmflags, retAttr, addrspace, fnAttrs, cconv);
 		}
 	}
 

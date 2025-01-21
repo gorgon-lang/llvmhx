@@ -16,6 +16,8 @@ enum Type {
 	TLabel;
 	TTypedPtr(t:Type);
 	TPtr;
+
+	TVarArg;
 }
 
 class TypeUtil {
@@ -35,6 +37,7 @@ class TypeUtil {
 			case TLabel: return 'label';
 			case TTypedPtr(t): return '${TypeUtil.toString(t)}*';
 			case TPtr: return 'ptr';
+			case TVarArg: return '...';
 		}
 	}
 }

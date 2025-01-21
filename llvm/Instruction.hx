@@ -1,5 +1,6 @@
 package llvm;
 
+import llvm.CallingConventions;
 import llvm.Parameter;
 import llvm.Constant;
 import llvm.ParameterAttribute;
@@ -29,5 +30,5 @@ enum Instruction {
 
 	Alloca(res:Identifier, type:Type, inalloca:Bool, ?alignment:Int, ?addrspace:Int, ?numElements:Constant);
 
-	Call(fnptrVal:String, args:Array<Parameter>, ?res:Identifier, ?resultType:Type, ?tail:CallTail, ?fmflags:FastMathFlag, ?retAttr:Array<ParameterAttribute>, ?addrspace:Int, ?fnAttrs:Array<FunctionAttribute>);
+	Call(functionDef:Function, args:Array<Parameter>, ?res:Identifier, ?resultType:Type, ?tail:CallTail, ?fmflags:FastMathFlag, ?retAttr:Array<ParameterAttribute>, ?addrspace:Int, ?fnAttrs:Array<FunctionAttribute>, ?cconv:CallingConventions);
 }

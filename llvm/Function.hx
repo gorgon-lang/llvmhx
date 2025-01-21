@@ -93,7 +93,7 @@ abstract Function(FunctionDef) from FunctionDef to FunctionDef {
 			}
 			for(i in 1...this.arguments.length) {
 				if(this.body == null) {
-					buffer.add('${this.arguments[i].toUnnamedString()}');
+					buffer.add(', ${this.arguments[i].toUnnamedString()}');
 				} else {
 					buffer.add(', ${this.arguments[i].toString()}');
 				}
